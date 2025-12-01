@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 
 interface DropZoneProps {
   onFilesDropped: (files: File[]) => void;
-  acceptExtension: string; // 예: ".prproj" 또는 ".srt"
+  acceptExtension: string; // 예: ".prproj" 또는 ".srt,.txt"
   title: string;
   subTitle: string;
   fileTypeLabel: string;
@@ -17,23 +17,25 @@ export const DropZone: React.FC<DropZoneProps> = ({
   subTitle,
   fileTypeLabel
 }) => {
+  const getExtensions = useCallback(() => {
+    return acceptExtension.split(',').map(ext => ext.trim().toLowerCase());
+  }, [acceptExtension]);
+
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
       
+      const extensions = getExtensions();
       const droppedFiles = Array.from(e.dataTransfer.files).filter(
-        (file: File) => file.name.toLowerCase().endsWith(acceptExtension.toLowerCase())
+        (file: File) => extensions.some(ext => file.name.toLowerCase().endsWith(ext))
       );
       
       if (droppedFiles.length > 0) {
         onFilesDropped(droppedFiles);
-      } else {
-        // 파일 형식이 맞지 않는 경우에 대한 처리가 필요하다면 여기에 추가
-        // 현재는 조용히 무시
       }
     },
-    [onFilesDropped, acceptExtension]
+    [onFilesDropped, getExtensions]
   );
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -43,12 +45,15 @@ export const DropZone: React.FC<DropZoneProps> = ({
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      const extensions = getExtensions();
       const selectedFiles = Array.from(e.target.files).filter(
-        (file: File) => file.name.toLowerCase().endsWith(acceptExtension.toLowerCase())
+        (file: File) => extensions.some(ext => file.name.toLowerCase().endsWith(ext))
       );
       onFilesDropped(selectedFiles);
     }
   };
+
+  const isTextMode = acceptExtension.includes('.srt') || acceptExtension.includes('.txt');
 
   return (
     <div
@@ -69,7 +74,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
       />
       <label htmlFor="fileInput" className="cursor-pointer flex flex-col items-center justify-center gap-4">
         <div className="bg-indigo-100 p-4 rounded-full group-hover:scale-110 transition-transform duration-200">
-          {acceptExtension === '.srt' ? (
+          {isTextMode ? (
             <FileText className="w-8 h-8 text-indigo-600" />
           ) : (
             <Upload className="w-8 h-8 text-indigo-600" />

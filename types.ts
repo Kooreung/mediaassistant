@@ -16,9 +16,9 @@ export enum AppTab {
   SRT = 'SRT',
 }
 
-export enum SrtMode {
-  EXTRACT_ONLY = 'EXTRACT_ONLY',
-  REFORMAT_32 = 'REFORMAT_32',
+export enum TextProcessMode {
+  EXTRACT_TEXT = 'EXTRACT_TEXT',
+  REFORMAT = 'REFORMAT',
 }
 
 export interface ProcessedFile {
