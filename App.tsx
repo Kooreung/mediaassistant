@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ArrowRightLeft, Monitor, Apple, Sparkles, Info, Laptop, FileText, Video, AlignLeft, Text, Settings2, Eye } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { clsx } from 'clsx';
@@ -385,73 +384,68 @@ export default function App() {
         )}
 
         {/* Dropzone */}
-        <section className="animate-in fade-in slide-in-from-bottom-8 duration-500 fill-mode-backwards delay-100">
-          <DropZone 
-            onFilesDropped={handleFilesDropped}
-            acceptExtension={activeTab === AppTab.FIXER ? ".prproj" : ".srt,.txt"}
-            title={activeTab === AppTab.FIXER ? ".prproj 파일을 이곳에 놓으세요" : ".srt 또는 .txt 파일을 이곳에 놓으세요"}
-            subTitle="클릭하여 파일 탐색기에서 선택 가능"
-            fileTypeLabel={activeTab === AppTab.FIXER ? "Adobe Premiere Project" : "자막 또는 텍스트 파일"}
-          />
-        </section>
+        <DropZone 
+          onFilesDropped={handleFilesDropped} 
+          acceptExtension={activeTab === AppTab.FIXER ? ".prproj" : ".srt,.txt"}
+          title={activeTab === AppTab.FIXER 
+            ? "Premiere 프로젝트 파일(.prproj)을 여기에 드롭하세요" 
+            : "자막 파일(.srt) 또는 텍스트 파일(.txt)을 여기에 드롭하세요"}
+          subTitle={activeTab === AppTab.FIXER
+            ? "여러 파일을 한번에 처리할 수 있습니다"
+            : "여러 파일을 한번에 최적화할 수 있습니다"}
+          fileTypeLabel={activeTab === AppTab.FIXER ? "PRPROJ Only" : "SRT / TXT"}
+        />
 
         {/* File List */}
         {files.length > 0 && (
-          <section className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-500 fill-mode-backwards delay-200">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-                작업 목록 
-                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs">{files.length}</span>
-              </h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={clearAll}
-                  disabled={isProcessing}
-                  className={`text-xs px-3 py-2 transition-colors rounded-lg ${
-                    isProcessing 
-                      ? 'text-slate-300 cursor-not-allowed' 
-                      : 'text-slate-400 hover:text-red-500 hover:bg-slate-50'
-                  }`}
-                >
-                  목록 비우기
-                </button>
-                {files.some(f => f.status === FileStatus.PENDING) && (
-                  <button
-                    onClick={handleProcess}
+          <div className="space-y-4">
+             <div className="flex items-center justify-between px-2">
+               <h3 className="text-lg font-semibold text-slate-800">
+                 작업 대기열 ({files.length})
+               </h3>
+               <div className="flex gap-2">
+                 <button 
+                    onClick={clearAll}
                     disabled={isProcessing}
-                    className={`px-5 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 ${
-                      isProcessing 
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg'
-                    }`}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        처리 중...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4" />
-                        {activeTab === AppTab.FIXER ? "변환 시작" : (textProcessMode === TextProcessMode.EXTRACT_TEXT ? "추출 시작" : "정리 시작")}
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              {files.map((file) => (
-                <FileItem key={file.id} item={file} onRemove={removeFile} />
-              ))}
-            </div>
-          </section>
+                    className="text-sm text-slate-500 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
+                   목록 비우기
+                 </button>
+                 <button
+                   onClick={handleProcess}
+                   disabled={isProcessing || !files.some(f => f.status === FileStatus.PENDING)}
+                   className={`flex items-center gap-2 px-6 py-2 rounded-xl text-white font-medium shadow-md transition-all ${
+                     isProcessing || !files.some(f => f.status === FileStatus.PENDING)
+                       ? 'bg-slate-400 cursor-not-allowed'
+                       : 'bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95'
+                   }`}
+                 >
+                   {isProcessing ? (
+                     <>
+                       <Sparkles className="w-5 h-5 animate-spin" />
+                       <span>처리 중...</span>
+                     </>
+                   ) : (
+                     <>
+                       <Sparkles className="w-5 h-5" />
+                       <span>변환 시작</span>
+                     </>
+                   )}
+                 </button>
+               </div>
+             </div>
+             
+             <div className="space-y-3">
+               {files.map((fileItem) => (
+                 <FileItem 
+                   key={fileItem.id} 
+                   item={fileItem} 
+                   onRemove={removeFile}
+                 />
+               ))}
+             </div>
+          </div>
         )}
-        
-        <section className="text-center text-xs text-slate-400 mt-10">
-          <p>서버로 파일이 전송되지 않으며, 브라우저 내에서 안전하게 처리됩니다.</p>
-        </section>
       </main>
     </div>
   );

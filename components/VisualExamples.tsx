@@ -1,6 +1,4 @@
-
-import React from 'react';
-import { AlertTriangle, CheckCircle2, ArrowRight, FileText, Clock, AlignLeft, MoveRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ArrowRight, Clock, AlignLeft, MoveRight } from 'lucide-react';
 
 export const PremiereFixerVisual = () => {
   return (
@@ -84,10 +82,10 @@ export const TextExtractVisual = () => {
           <span className="font-mono text-[10px]">SRT FORMAT</span>
         </div>
         <div className="font-mono text-slate-600 leading-relaxed opacity-60">
-          <div className="text-orange-400 text-[10px]">00:01:23 --&gt; 00:01:25</div>
+          <div className="text-orange-400 text-[10px]">00:01:23 {'-->'} 00:01:25</div>
           <div>안녕하세요</div>
           <div className="h-2"></div>
-          <div className="text-orange-400 text-[10px]">00:01:26 --&gt; 00:01:29</div>
+          <div className="text-orange-400 text-[10px]">00:01:26 {'-->'} 00:01:29</div>
           <div>반갑습니다</div>
         </div>
       </div>

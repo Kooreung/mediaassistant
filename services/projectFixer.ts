@@ -43,7 +43,6 @@ export const fixProjectFile = async (
 
         // Perform Normalization
         // We compare the original string length/content to count changes roughly
-        const originalLength = xmlContent.length; // Proxy for change detection
         
         let fixedXml = '';
         const targetForm = mode === ConversionMode.MAC_TO_WIN ? 'NFC' : 'NFD';
@@ -70,7 +69,8 @@ export const fixProjectFile = async (
           outputData = fixedData;
         }
 
-        const fixedBlob = new Blob([outputData], { type: 'application/x-premiere-service' });
+        // Cast to any to bypass TS type mismatch between Uint8Array and BlobPart in some environments
+        const fixedBlob = new Blob([outputData as any], { type: 'application/x-premiere-service' });
         
         resolve({ blob: fixedBlob, count: changeScore });
 
